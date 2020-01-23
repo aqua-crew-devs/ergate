@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+    
+jobs:
+  build-and-deploy:
+    name: Build Image and Deploy to Test Environment
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: develop
+    - name: Build and Push to docker registry
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: ayase252/ergate
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        snapshot: true
+      id: docker-publisher
