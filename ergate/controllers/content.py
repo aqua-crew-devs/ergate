@@ -4,8 +4,9 @@ import uuid
 from datetime import datetime
 
 import requests
-
 from streamlink import Streamlink
+
+import ergate.utils.upload import upload_file
 
 
 def _init_record(stream_url, callback_url):
@@ -55,6 +56,18 @@ def _init_record(stream_url, callback_url):
             callback_url,
             json={
                 "event": "downloaded",
+                "id": filename,
+                "timestamp": datetime().strftime("%Y-%m-%d %H:%m:%s"),
+                "total_bytes": total_byte_accepted,
+            },
+        )
+
+        upload_file("./records/{}".format(filename), filename, "blackbox-statics")
+
+        requests.post(
+            callback_url,
+            json={
+                "event": "uploaded",
                 "id": filename,
                 "timestamp": datetime().strftime("%Y-%m-%d %H:%m:%s"),
                 "total_bytes": total_byte_accepted,
